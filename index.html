@@ -5,19 +5,53 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css" integrity="sha384-zCbKRCUGaJDkqS1kPbPd7TveP5iyJE0EjAuZQTgFLD2ylzuqKfdKlfG/eSrtxUkn" crossorigin="anonymous">
     <link rel="stylesheet" href="./assets/css/reset.css">
     <link rel="stylesheet" href="./assets/css/style.css">
     <title>Weather Dashboard</title>
 </head>
 
 <body>
+    <!-- header/jombotron Weather Dashboard -->
+    <div class="row">
+        <div class="col-12">
+            <div class="jumbotron jumbotron-fluid">
+                <div class="container">
+                    <h1 class="display-4">Weather Dashboard</h1>
+                </div>
+            </div>
+        </div>
+        <!-- search form left with col-3  -->
+        <div class="col-3">
+            <div id="searchCity">
+                <h2>Search for a City:</h2>
+            </div>
+            <nav class="navbar bg-light">
+                <form class="searchForm" id="searchForm">
+                    <input class="form-control mr-sm-5" type="search" placeholder="Search" id="toSearch" aria-label="Search">
+                    <button class="btn btn-outline-success btn-block my-2 my-sm-4" type="submit">Search</button>
+                    <p><span id="search-count"></span></p>
+                    <ul id="searchList"></ul>
+                </form>
+            </nav>
+        </div>
 
+        <div class="col-9">
+            <!-- box in the righ with col-9  -->
+            <div class="weather-info row col-md-8 bg-light" id="today">
+                <p>Lorem ipsum dolor sit amet consectetur adipisicing.
+                </p>
+            </div>
+            <!-- icons to the Weather situation -->
+            <div>
+                <span class="day border border-primary bg-dark" id="fiveDays"></span>
+            </div>
 
-
-
-
-
-
+        </div>
+    </div>
+    <script src=" https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.min.js"></script>
     <script src="./assets/script/script.js"></script>
 </body>
 
