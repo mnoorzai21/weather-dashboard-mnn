@@ -1,7 +1,6 @@
 // declare my variables
 var searchForm = document.querySelector("#searchForm");
 var searchInput = document.querySelector("#toSearch");
-var searchCount = document.querySelector("#search-count");
 var searchList = document.querySelector("#searchList");
 var searchBtn = document.querySelector(".btn");
 var searchCity = document.querySelector("#searchCity");
@@ -11,48 +10,58 @@ var fiveDays = document.querySelector("#fiveDays");
 var search = [];
 var apiKey = "b1a68922cfde0b1d07bee887e415302e";
 
-function getWeatherUpdate(cityName) {
+function weatherUpdate(cityName) {
 
     todayResult.innerHTML = "";
     fiveDays.innerHTML = "";
-    // make request to the weather website
+
     var requesLatLontUrl = 'http://api.openweathermap.org/geo/1.0/direct?q=' +
-        cityName + ',US&limit=5&appid=' + apiKey;
-    // request fetch function for the weather
+        cityName + '&limit=5&appid=' + apiKey;
+
     fetch(requesLatLontUrl)
         .then(function(response) {
             return response.json();
         })
-        .then(function(data) {
-            var cityInfo = data[0];
-            var weatherUrl = 'https://api.openweathermap.org/data/2.5/onecall?lat=' +
-                cityInfo.lat + '&lon=' + cityInfo.lon +
-                '&exclude=hourly,minutely,units,alerts&appid=' +
-                apiKey;
-        });
 
-    fetch(weatherUrl)
-        .then(function(response) {
-            return response.json();
-        })
-        .then(function(forecostDay) {
+    .then(function(data) {
+        var cityInfo = data[0];
+        var weatherUrl = 'https://api.openweathermap.org/data/2.5/onecall?lat=' +
+            cityInfo.lat +
+            '&lon=' +
+            cityInfo.lon +
+            '&exclude=minutely,hourly&units=imperial&appid=' +
+            apiKey;
 
-                var cityName = document.createElement("h3");
-                cityName.textContent = cityName.toUpperCase() + " " + moment.unix(forecostDay.current.sunrise).format("MMMM DD, YYYY");
+        fetch(weatherUrl)
+            .then(function(response) {
+                return response.json();
+            })
+            .then(function(forecastDay) {
+                var cityNameEl = document.createElement("h3");
+                cityNameEl.textContent =
+                    cityName.toUpperCase() +
+                    " " +
+                    moment.unix(forecastDay.current.sunrise).format("MMMM DD, YYYY");
                 var weatherIcon = document.createElement("img");
-                weatherIcon.setAttribute(src = 'http://openweathermap.org/img/wn/' + forecostDay.current.weather[0].icon + '.png');
-                cityName.append(weatherIcon);
-                todayResult.append(cityName);
+                weatherIcon.setAttribute(
+                    "src",
+                    "https://openweathermap.org/img/w/" +
+                    forecastDay.current.weather[0].icon +
+                    ".png"
+                );
+
+                cityNameEl.append(weatherIcon);
+                todayResult.append(cityNameEl);
 
                 var temperature = document.createElement("p");
                 var wind = document.createElement("p");
                 var humidity = document.createElement("p");
                 var uvi = document.createElement("p");
 
-                temperature.textContent = "Temp: " + forecostDay.current.temp + " F";
-                wind.textContent = "Wind " + forecostDay.current.wind_speed + " MPH";
-                humidity.textContent = "Humidity: " + forecostDay.current.humidity + " %";
-                uvi.textContent = "UV Index: " + forecostDay.current.uvi;
+                temperature.textContent = "Temp: " + forecastDay.current.temp + " F " + " ";
+                wind.textContent = " Wind: " + forecastDay.current.wind_speed + " MPH ";
+                humidity.textContent = " Humidity: " + forecastDay.current.humidity + " % ";
+                uvi.textContent = "UV Index: " + forecastDay.current.uvi;
 
                 todayResult.append(temperature);
                 todayResult.append(wind);
@@ -64,83 +73,80 @@ function getWeatherUpdate(cityName) {
                 fiveDays.append(fiveDaysResult);
 
                 for (var i = 0; i < 5; i++) {
-                    var nextDayWeather = forecostDay.daily[i];
+                    var nextDayWeather = forecastDay.daily[i];
                     var nextDayWeatherCard = document.createElement("p");
-                    nextDayWeatherCard.style.width = "18%";
+                    nextDayWeatherCard.style.width = "30%";
 
-                    var date = moment.(nextDayWeather.sunrise).format("MMMM DD, YYYY");
+                    var date = moment.unix(nextDayWeather.sunrise).format("MMMM DD, YYYY");
                     nextDayWeatherCard.append(date);
                     var weatherIcon = document.createElement("img");
                     weatherIcon.setAttribute("src", " http://openweathermap.org/img/w/" + nextDayWeather.weather[0].icon + ".png");
 
+                    nextDayWeatherCard.append(weatherIcon);
+                    var temp = document.createElement("p");
+                    temp.textContent = "Temp: " + nextDayWeather.temp.day + " F ";
+                    nextDayWeatherCard.append(temp);
 
+                    var wind = document.createElement("p");
+                    wind.textContent = "Wind: " + nextDayWeather.wind_speed + " MPH ";
+                    nextDayWeatherCard.append(wind);
+
+                    var humidity = document.createElement("p");
+                    humidity.textContent =
+                        "Humidty: " + nextDayWeather.humidity + " %";
+                    nextDayWeatherCard.append(humidity);
+
+                    fiveDays.append(nextDayWeatherCard);
                 }
-                // response function
-                // get the response from the weather website
-                // request function for the lat and lon
-                // make request to the weather website
-                // connect it to the search button
-                // add one city for now
-                // display it to the user
+            });
+    });
+}
+
+searchBtn.addEventListener("click", function(event) {
+    event.preventDefault();
+
+    var searchValue = searchInput.value.trim();
+    if (!searchValue) {
+        return;
+    }
+
+    search.push(searchValue);
+    weatherUpdate(searchValue);
+    saveHistory();
+    searchInput.value = '';
+});
 
 
+function init() {
 
+    var saveSearch = JSON.parse(localStorage.getItem("search"));
 
+    if (saveSearch) {
+        search = saveSearch;
+    }
+    saveHistory();
+}
 
+function saveHistory() {
+    searchList.innerHTML = "";
 
+    for (var i = search.length - 1; i >= 0; i--) {
 
+        var toSearch = search[i];
 
+        var savedCity = document.createElement("button");
 
+        savedCity.textContent = toSearch;
+        savedCity.setAttribute("data-index", toSearch);
 
+        savedCity.addEventListener("click", function() {
 
+            var searchCity = this.getAttribute("data-index");
+            weatherUpdate(searchCity);
+        });
+        searchList.append(savedCity);
+    }
 
-
-
-                // save to local storage
-
-                // function saveHistory() {
-                //     searchList.innerHTML = "";
-
-                //     for (var i = 0; i < search.length; i++) {
-                //         var toSearch = search[i];
-
-                //         var li = document.createElement("li");
-                //         li.textContent = toSearch;
-                //         li.setAttribute("data-index", i);
-
-                //         var button = document.createElement("button");
-                //         button.textContent = "";
-
-                //         searchList.appendChild(li);
-                //     }
-                // }
-
-                // function init() {
-
-                //     var saveSearch = JSON.parse(localStorage.getItem("search"));
-
-                //     if (saveSearch) {
-                //         search = saveSearch;
-                //     }
-                //     saveHistory();
-                // }
-
-                // function saveSearch() {
-
-                //     localStorage.setItem("search", JSON.stringify(search));
-                // }
-                // searchForm.addEventListener("submit", function(event) {
-                //     event.preventDefault();
-
-                //     var searchText = searchInput.value.trim();
-
-                //     if (searchText === "") {
-                //         return;
-                //     }
-                //     search.push(searchText);
-                //     searchInput.value = "";
-
-                //     saveSearch();
-                //     saveHistory();
-                // });
-                // init();
+    localStorage.setItem("search", JSON.stringify(search));
+}
+init();
