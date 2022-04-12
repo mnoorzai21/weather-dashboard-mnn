@@ -15,7 +15,7 @@ function weatherUpdate(cityName) {
     todayResult.innerHTML = "";
     fiveDays.innerHTML = "";
 
-    var requesLatLontUrl = 'http://api.openweathermap.org/geo/1.0/direct?q=' +
+    var requesLatLontUrl = 'https://api.openweathermap.org/geo/1.0/direct?q=' +
         cityName + '&limit=5&appid=' + apiKey;
 
     fetch(requesLatLontUrl)
@@ -80,7 +80,7 @@ function weatherUpdate(cityName) {
                     var date = moment.unix(nextDayWeather.sunrise).format("MMMM DD, YYYY");
                     nextDayWeatherCard.append(date);
                     var weatherIcon = document.createElement("img");
-                    weatherIcon.setAttribute("src", " http://openweathermap.org/img/w/" + nextDayWeather.weather[0].icon + ".png");
+                    weatherIcon.setAttribute("src", " https://openweathermap.org/img/w/" + nextDayWeather.weather[0].icon + ".png");
 
                     nextDayWeatherCard.append(weatherIcon);
                     var temp = document.createElement("p");
