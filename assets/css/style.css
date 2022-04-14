@@ -50,3 +50,21 @@ h3 {
     flex-direction: row;
     align-content: space-between;
 }
+
+@media only screen and (max-width: 500px) {
+    .fiveDaysForcast {
+        width: 100%;
+    }
+    #fiveDays {
+        flex-direction: column;
+    }
+    .display-4 {
+        font-size: 2rem;
+    }
+    h2 {
+        font-size: 1rem;
+    }
+    .searchForm {
+        width: 100%;
+    }
+}

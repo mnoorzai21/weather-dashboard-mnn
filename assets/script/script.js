@@ -75,7 +75,8 @@ function weatherUpdate(cityName) {
                 for (var i = 0; i < 5; i++) {
                     var nextDayWeather = forecastDay.daily[i];
                     var nextDayWeatherCard = document.createElement("p");
-                    nextDayWeatherCard.style.width = "30%";
+                    nextDayWeatherCard.classList.add("fiveDaysForcast")
+                        // nextDayWeatherCard.style.width = "30%";
 
                     var date = moment.unix(nextDayWeather.sunrise).format("MMMM DD, YYYY");
                     nextDayWeatherCard.append(date);
