@@ -28,8 +28,8 @@ async function getWeatherData(cityName) {
       throw new Error("Error fetching weather data.");
     }
 
-    // Now fetch the 5-day forecast using the onecall endpoint
-    const forecastUrl = `https://api.openweathermap.org/data/2.5/onecall?lat=${weatherData.coord.lat}&lon=${weatherData.coord.lon}&appid=${apiKey}&units=imperial`;
+    // Now fetch the 5-day forecast using the 5-day endpoint (not onecall)
+    const forecastUrl = `https://api.openweathermap.org/data/2.5/forecast?lat=${weatherData.coord.lat}&lon=${weatherData.coord.lon}&appid=${apiKey}&units=imperial`;
     const forecastResponse = await fetch(forecastUrl);
     const forecastData = await forecastResponse.json();
 
@@ -71,6 +71,7 @@ function displayWeather(currentWeatherData, forecastData) {
   const temperature = document.createElement("p");
   const wind = document.createElement("p");
   const humidity = document.createElement("p");
+  const uvi = document.createElement("p")
 
   // Ensure the properties exist before accessing them
   if (currentWeather) {
@@ -85,45 +86,25 @@ function displayWeather(currentWeatherData, forecastData) {
 
   todayResult.append(temperature, wind, humidity);
 
-  // Fetch and display sunrise time (if available in the response)
-  fetchForecastData(currentWeatherData.coord)
-    .then(function (forecastDay) {
-      const sunriseTime = moment.unix(forecastDay.current.sunrise).format("MMMM DD, YYYY");
-
-      // Create an element for city name with sunrise
-      var cityNameWithSunriseEl = document.createElement("h3");
-      cityNameWithSunriseEl.textContent = `${currentWeatherData.name.toUpperCase()} ${sunriseTime}`;
-
-      // Add sunrise weather icon
-      var sunriseIcon = document.createElement("img");
-      sunriseIcon.setAttribute(
-        "src",
-        `https://openweathermap.org/img/w/${forecastDay.current.weather[0].icon}.png`
-      );
-
-      // Append the elements to the page
-      cityNameWithSunriseEl.append(sunriseIcon);
-      todayResult.append(cityNameWithSunriseEl);
-    })
-    .catch(function (error) {
-      console.error("Error fetching forecast data:", error);
-    });
-
   // Display 5-Day Forecast
   const fiveDaysEl = document.createElement("h3");
   fiveDaysEl.textContent = "Five Days Forecast";
   fiveDaysResult.append(fiveDaysEl);
 
-  if (forecastData.daily && forecastData.daily.length > 0) {
-    forecastData.daily.slice(0, 5).forEach((dayData) => {
+  if (forecastData.list && forecastData.list.length > 0) {
+    forecastData.list.slice(0, 5).forEach((dayData) => {
       const weatherCard = document.createElement("div");
       weatherCard.classList.add("fiveDaysForcast");
 
-      const date = moment.unix(dayData.dt).format("MMMM DD, YYYY");
+      // Format the date properly
+      const date = moment.unix(dayData.dt).format("MMMM DD, YYYY"); // Ensure the format string is correct
       const dateEl = document.createElement("p");
       dateEl.textContent = date;
+
+      // Append the formatted date to the weather card
       weatherCard.append(dateEl);
 
+      // Add weather icon
       const dayIcon = document.createElement("img");
       dayIcon.setAttribute(
         "src",
@@ -131,18 +112,22 @@ function displayWeather(currentWeatherData, forecastData) {
       );
       weatherCard.append(dayIcon);
 
+      // Add temperature details
       const temp = document.createElement("p");
-      temp.textContent = `Temp: ${dayData.temp.day} °F`;
+      temp.textContent = `Temp: ${dayData.main.temp} °F`;
       weatherCard.append(temp);
 
+      // Add wind speed
       const wind = document.createElement("p");
-      wind.textContent = `Wind: ${dayData.wind_speed} MPH`;
+      wind.textContent = `Wind: ${dayData.wind.speed} MPH`;
       weatherCard.append(wind);
 
+      // Add humidity details
       const humidity = document.createElement("p");
-      humidity.textContent = `Humidity: ${dayData.humidity} %`;
+      humidity.textContent = `Humidity: ${dayData.main.humidity} %`;
       weatherCard.append(humidity);
 
+      // Append the weather card to the forecast section
       fiveDaysResult.append(weatherCard);
     });
   } else {
