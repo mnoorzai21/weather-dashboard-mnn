@@ -33,10 +33,3 @@ You can view the live version of the app here:
 ## Screenshot
 ![Weather Dashboard Screenshot](./assets/img/screenshot.png)
 
-## Installation Instructions
-
-To run this project locally on your machine:
-
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/yourusername/weather-dashboard-mnn.git
