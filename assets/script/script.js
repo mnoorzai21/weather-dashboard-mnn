@@ -3,7 +3,6 @@ const searchForm = document.querySelector("#searchForm");
 const searchInput = document.querySelector("#toSearch");
 const searchList = document.querySelector("#searchList");
 const searchBtn = document.querySelector(".btn");
-const searchCity = document.querySelector("#searchCity");
 const todayResult = document.querySelector("#today");
 const fiveDaysResult = document.querySelector("#fiveDays");
 
@@ -16,51 +15,44 @@ async function getWeatherData(cityName) {
   fiveDaysResult.innerHTML = "";
 
   try {
-    // Fetch latitude and longitude for the city
-    const geoUrl = `https://api.openweathermap.org/geo/1.0/direct?q=${cityName}&limit=5&appid=${apiKey}`;
-    const geoResponse = await fetch(geoUrl);
-    const geoData = await geoResponse.json();
-    const cityInfo = geoData[0];
-
-    if (!cityInfo) {
-      throw new Error("City not found.");
-    }
-
-    // Fetch weather data for the city
-    const weatherUrl = `https://api.openweathermap.org/data/2.5/onecall?lat=${cityInfo.lat}&lon=${cityInfo.lon}&exclude=minutely,hourly&units=imperial&appid=${apiKey}`;
+    // Fetch weather data using the city name and country (optional)
+    const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?q=${cityName}&appid=${apiKey}&units=imperial`;
     const weatherResponse = await fetch(weatherUrl);
     const weatherData = await weatherResponse.json();
 
-    if (!weatherData.daily) {
-      throw new Error("Daily weather data is unavailable.");
+    // Check if the response contains valid data
+    if (!weatherData || weatherData.cod !== 200) {
+      throw new Error("Error fetching weather data.");
     }
 
-    displayCurrentWeather(weatherData, cityName);
-    displayFiveDayForecast(weatherData);
+    console.log("Weather Data:", weatherData); // Log the response to inspect the data
+
+    // Now fetch the 5-day forecast using the onecall endpoint
+    const forecastUrl = `https://api.openweathermap.org/data/2.5/onecall?lat=${weatherData.coord.lat}&lon=${weatherData.coord.lon}&appid=${apiKey}&units=imperial`;
+    const forecastResponse = await fetch(forecastUrl);
+    const forecastData = await forecastResponse.json();
+
+    // Call the function to display both current weather and the 5-day forecast
+    displayWeather(weatherData, forecastData);
   } catch (error) {
     console.error("Error fetching weather data:", error);
     alert("Error fetching weather data. Please try again.");
   }
 }
 
-// Function to display current weather
-function displayCurrentWeather(weatherData, cityName) {
-  const currentWeather = weatherData.current;
-
-  if (!currentWeather) {
-    alert("Unable to fetch current weather.");
-    return;
-  }
+// Function to display both current weather and 5-day forecast
+function displayWeather(currentWeatherData, forecastData) {
+  // Display Current Weather
+  const currentWeather = currentWeatherData.main;
+  const weatherDescription = currentWeatherData.weather[0].description;
 
   const cityNameEl = document.createElement("h3");
-  cityNameEl.textContent = `${cityName.toUpperCase()} ${moment
-    .unix(currentWeather.sunrise)
-    .format("MMMM DD, YYYY")}`;
+  cityNameEl.textContent = `${currentWeatherData.name.toUpperCase()} - ${weatherDescription}`;
 
   const weatherIcon = document.createElement("img");
   weatherIcon.setAttribute(
     "src",
-    `https://openweathermap.org/img/w/${currentWeather.weather[0].icon}.png`
+    `https://openweathermap.org/img/w/${currentWeatherData.weather[0].icon}.png`
   );
 
   cityNameEl.append(weatherIcon);
@@ -69,28 +61,24 @@ function displayCurrentWeather(weatherData, cityName) {
   const temperature = document.createElement("p");
   const wind = document.createElement("p");
   const humidity = document.createElement("p");
-  const uvi = document.createElement("p");
 
   temperature.textContent = `Temp: ${currentWeather.temp} °F`;
-  wind.textContent = `Wind: ${currentWeather.wind_speed} MPH`;
+  wind.textContent = `Wind: ${currentWeatherData.wind.speed} MPH`;
   humidity.textContent = `Humidity: ${currentWeather.humidity} %`;
-  uvi.textContent = `UV Index: ${currentWeather.uvi}`;
 
-  todayResult.append(temperature, wind, humidity, uvi);
-}
+  todayResult.append(temperature, wind, humidity);
 
-// Function to display the 5-day forecast
-function displayFiveDayForecast(weatherData) {
+  // Display 5-Day Forecast
   const fiveDaysEl = document.createElement("h3");
   fiveDaysEl.textContent = "Five Days Forecast";
   fiveDaysResult.append(fiveDaysEl);
 
-  if (weatherData.daily && weatherData.daily.length > 0) {
-    weatherData.daily.slice(0, 5).forEach((dayData) => {
+  if (forecastData.daily && forecastData.daily.length > 0) {
+    forecastData.daily.slice(0, 5).forEach((dayData) => {
       const weatherCard = document.createElement("div");
       weatherCard.classList.add("fiveDaysForcast");
 
-      const date = moment.unix(dayData.sunrise).format("MMMM DD, YYYY");
+      const date = moment.unix(dayData.dt).format("MMMM DD, YYYY");
       const dateEl = document.createElement("p");
       dateEl.textContent = date;
       weatherCard.append(dateEl);

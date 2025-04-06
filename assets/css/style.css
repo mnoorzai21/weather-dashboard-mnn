@@ -22,20 +22,20 @@ body {
     margin-top: 20px; /* Added margin-top to avoid overlap */
 }
 
-/* Flexbox Layout */
+/* Flexbox Layout for Search Section */
 .flex {
     display: flex;
     justify-content: space-between;
     flex-wrap: wrap;
 }
 
-/* Form Section */
-#searchCity {
+/* Form Section (Search for City) */
+#searchForm {
     flex: 1;
     padding: 15px;
 }
 
-/* Weather Information */
+/* Weather Information Section */
 .weatherInfo {
     flex: 2;
     padding: 15px;
@@ -47,7 +47,7 @@ h1, h2, h3 {
     font-weight: bold;
 }
 
-/* Search Button */
+/* Search Button Styling */
 #btn, #searchList button {
     background-color: rgb(56, 56, 222);
     color: white;
@@ -101,7 +101,7 @@ h1, h2, h3 {
     }
 }
 
-/* Today Weather Card */
+/* Today Weather Card Styling */
 .today {
     display: flex;
     flex-direction: column;
