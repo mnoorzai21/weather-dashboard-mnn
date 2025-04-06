@@ -15,28 +15,21 @@ async function getWeatherData(cityName) {
   fiveDaysResult.innerHTML = "";
 
   try {
-    // Fetch weather data using the city name and country (optional)
+    // Fetch current weather data
     const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?q=${cityName}&appid=${apiKey}&units=imperial`;
     const weatherResponse = await fetch(weatherUrl);
     const weatherData = await weatherResponse.json();
 
-    // Log the weather data to inspect the structure
-    console.log("Current Weather Data:", weatherData);
-
-    // Check if the response contains valid data
     if (!weatherData || weatherData.cod !== 200) {
       throw new Error("Error fetching weather data.");
     }
 
-    // Now fetch the 5-day forecast using the 5-day endpoint (not onecall)
+    // Fetch 5-day forecast using coordinates
     const forecastUrl = `https://api.openweathermap.org/data/2.5/forecast?lat=${weatherData.coord.lat}&lon=${weatherData.coord.lon}&appid=${apiKey}&units=imperial`;
     const forecastResponse = await fetch(forecastUrl);
     const forecastData = await forecastResponse.json();
 
-    // Log the forecast data to inspect the structure
-    console.log("5-Day Forecast Data:", forecastData);
-
-    // Call the function to display both current weather and the 5-day forecast
+    // Display both current weather and 5-day forecast
     displayWeather(weatherData, forecastData);
   } catch (error) {
     console.error("Error fetching weather data:", error);
@@ -44,17 +37,16 @@ async function getWeatherData(cityName) {
   }
 }
 
-// Function to display both current weather and 5-day forecast
+// Function to display current weather and 5-day forecast
 function displayWeather(currentWeatherData, forecastData) {
-  // Display Current Weather
+  // Display current weather
   const currentWeather = currentWeatherData.main;
   const weatherDescription = currentWeatherData.weather[0].description;
-
   const cityNameEl = document.createElement("h3");
 
-  // Get the current date and format it
+  // Format current date
   const currentDate = new Date();
-  const dateString = currentDate.toLocaleDateString(); // Format it as needed
+  const dateString = currentDate.toLocaleDateString();
 
   cityNameEl.textContent = `${currentWeatherData.name.toUpperCase()} - ${weatherDescription} (${dateString})`;
 
@@ -68,24 +60,18 @@ function displayWeather(currentWeatherData, forecastData) {
   cityNameEl.append(weatherIcon);
   todayResult.append(cityNameEl);
 
+  // Display weather details
   const temperature = document.createElement("p");
   const wind = document.createElement("p");
   const humidity = document.createElement("p");
 
-  // Ensure the properties exist before accessing them
-  if (currentWeather) {
-    temperature.textContent = `Temp: ${currentWeather.temp} °F`;
-    wind.textContent = `Wind: ${currentWeatherData.wind.speed} MPH`;
-    humidity.textContent = `Humidity: ${currentWeather.humidity} %`;
-  } else {
-    temperature.textContent = "Temperature data not available.";
-    wind.textContent = "Wind data not available.";
-    humidity.textContent = "Humidity data not available.";
-  }
+  temperature.textContent = `Temp: ${currentWeather.temp} °F`;
+  wind.textContent = `Wind: ${currentWeatherData.wind.speed} MPH`;
+  humidity.textContent = `Humidity: ${currentWeather.humidity} %`;
 
   todayResult.append(temperature, wind, humidity);
 
-  // Display 5-Day Forecast
+  // Display 5-day forecast
   const fiveDaysEl = document.createElement("h3");
   fiveDaysEl.textContent = "Five Days Forecast";
   fiveDaysResult.append(fiveDaysEl);
@@ -95,12 +81,10 @@ function displayWeather(currentWeatherData, forecastData) {
       const weatherCard = document.createElement("div");
       weatherCard.classList.add("fiveDaysForcast");
 
-      // Format the date properly
-      const date = moment.unix(dayData.dt).format("MMMM DD, YYYY"); // Ensure the format string is correct
+      // Format the date
+      const date = moment.unix(dayData.dt).format("MMMM DD, YYYY");
       const dateEl = document.createElement("p");
       dateEl.textContent = date;
-
-      // Append the formatted date to the weather card
       weatherCard.append(dateEl);
 
       // Add weather icon
@@ -111,22 +95,19 @@ function displayWeather(currentWeatherData, forecastData) {
       );
       weatherCard.append(dayIcon);
 
-      // Add temperature details
+      // Add temperature, wind, and humidity
       const temp = document.createElement("p");
       temp.textContent = `Temp: ${dayData.main.temp} °F`;
       weatherCard.append(temp);
 
-      // Add wind speed
       const wind = document.createElement("p");
       wind.textContent = `Wind: ${dayData.wind.speed} MPH`;
       weatherCard.append(wind);
 
-      // Add humidity details
       const humidity = document.createElement("p");
       humidity.textContent = `Humidity: ${dayData.main.humidity} %`;
       weatherCard.append(humidity);
 
-      // Append the weather card to the forecast section
       fiveDaysResult.append(weatherCard);
     });
   } else {
@@ -134,18 +115,7 @@ function displayWeather(currentWeatherData, forecastData) {
   }
 }
 
-// Function to fetch 5-day forecast data
-async function fetchForecastData(coord) {
-  const apiKey = "your_api_key_here"; // Make sure to use the correct API key for forecast data
-  const forecastUrl = `https://api.openweathermap.org/data/2.5/onecall?lat=${coord.lat}&lon=${coord.lon}&exclude=hourly,minutely&appid=${apiKey}&units=imperial`;
-
-  const response = await fetch(forecastUrl);
-  const forecastData = await response.json();
-
-  return forecastData;
-}
-
-// Function to handle the search button click event
+// Function to handle search button click event
 searchBtn.addEventListener("click", function (event) {
   event.preventDefault();
 
@@ -163,7 +133,6 @@ searchBtn.addEventListener("click", function (event) {
 // Initialize app and load search history from localStorage
 function init() {
   const savedSearchHistory = JSON.parse(localStorage.getItem("searchHistory"));
-
   if (savedSearchHistory) {
     searchHistory = savedSearchHistory;
   }
