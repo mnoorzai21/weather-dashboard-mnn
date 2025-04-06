@@ -20,17 +20,21 @@ async function getWeatherData(cityName) {
     const weatherResponse = await fetch(weatherUrl);
     const weatherData = await weatherResponse.json();
 
+    // Log the weather data to inspect the structure
+    console.log("Current Weather Data:", weatherData);
+
     // Check if the response contains valid data
     if (!weatherData || weatherData.cod !== 200) {
       throw new Error("Error fetching weather data.");
     }
 
-    console.log("Weather Data:", weatherData); // Log the response to inspect the data
-
     // Now fetch the 5-day forecast using the onecall endpoint
     const forecastUrl = `https://api.openweathermap.org/data/2.5/onecall?lat=${weatherData.coord.lat}&lon=${weatherData.coord.lon}&appid=${apiKey}&units=imperial`;
     const forecastResponse = await fetch(forecastUrl);
     const forecastData = await forecastResponse.json();
+
+    // Log the forecast data to inspect the structure
+    console.log("5-Day Forecast Data:", forecastData);
 
     // Call the function to display both current weather and the 5-day forecast
     displayWeather(weatherData, forecastData);
@@ -47,8 +51,14 @@ function displayWeather(currentWeatherData, forecastData) {
   const weatherDescription = currentWeatherData.weather[0].description;
 
   const cityNameEl = document.createElement("h3");
-  cityNameEl.textContent = `${currentWeatherData.name.toUpperCase()} - ${weatherDescription}`;
 
+  // Get the current date and format it
+  const currentDate = new Date();
+  const dateString = currentDate.toLocaleDateString(); // Format it as needed
+
+  cityNameEl.textContent = `${currentWeatherData.name.toUpperCase()} - ${weatherDescription} (${dateString})`;
+
+  // Add weather icon
   const weatherIcon = document.createElement("img");
   weatherIcon.setAttribute(
     "src",
@@ -62,11 +72,42 @@ function displayWeather(currentWeatherData, forecastData) {
   const wind = document.createElement("p");
   const humidity = document.createElement("p");
 
-  temperature.textContent = `Temp: ${currentWeather.temp} °F`;
-  wind.textContent = `Wind: ${currentWeatherData.wind.speed} MPH`;
-  humidity.textContent = `Humidity: ${currentWeather.humidity} %`;
+  // Ensure the properties exist before accessing them
+  if (currentWeather) {
+    temperature.textContent = `Temp: ${currentWeather.temp} °F`;
+    wind.textContent = `Wind: ${currentWeatherData.wind.speed} MPH`;
+    humidity.textContent = `Humidity: ${currentWeather.humidity} %`;
+  } else {
+    temperature.textContent = "Temperature data not available.";
+    wind.textContent = "Wind data not available.";
+    humidity.textContent = "Humidity data not available.";
+  }
 
   todayResult.append(temperature, wind, humidity);
+
+  // Fetch and display sunrise time (if available in the response)
+  fetchForecastData(currentWeatherData.coord)
+    .then(function (forecastDay) {
+      const sunriseTime = moment.unix(forecastDay.current.sunrise).format("MMMM DD, YYYY");
+
+      // Create an element for city name with sunrise
+      var cityNameWithSunriseEl = document.createElement("h3");
+      cityNameWithSunriseEl.textContent = `${currentWeatherData.name.toUpperCase()} ${sunriseTime}`;
+
+      // Add sunrise weather icon
+      var sunriseIcon = document.createElement("img");
+      sunriseIcon.setAttribute(
+        "src",
+        `https://openweathermap.org/img/w/${forecastDay.current.weather[0].icon}.png`
+      );
+
+      // Append the elements to the page
+      cityNameWithSunriseEl.append(sunriseIcon);
+      todayResult.append(cityNameWithSunriseEl);
+    })
+    .catch(function (error) {
+      console.error("Error fetching forecast data:", error);
+    });
 
   // Display 5-Day Forecast
   const fiveDaysEl = document.createElement("h3");
@@ -83,12 +124,12 @@ function displayWeather(currentWeatherData, forecastData) {
       dateEl.textContent = date;
       weatherCard.append(dateEl);
 
-      const weatherIcon = document.createElement("img");
-      weatherIcon.setAttribute(
+      const dayIcon = document.createElement("img");
+      dayIcon.setAttribute(
         "src",
         `https://openweathermap.org/img/w/${dayData.weather[0].icon}.png`
       );
-      weatherCard.append(weatherIcon);
+      weatherCard.append(dayIcon);
 
       const temp = document.createElement("p");
       temp.textContent = `Temp: ${dayData.temp.day} °F`;
@@ -107,6 +148,17 @@ function displayWeather(currentWeatherData, forecastData) {
   } else {
     fiveDaysResult.innerHTML = "<p>No forecast data available.</p>";
   }
+}
+
+// Function to fetch 5-day forecast data
+async function fetchForecastData(coord) {
+  const apiKey = "your_api_key_here"; // Make sure to use the correct API key for forecast data
+  const forecastUrl = `https://api.openweathermap.org/data/2.5/onecall?lat=${coord.lat}&lon=${coord.lon}&exclude=hourly,minutely&appid=${apiKey}&units=imperial`;
+
+  const response = await fetch(forecastUrl);
+  const forecastData = await response.json();
+
+  return forecastData;
 }
 
 // Function to handle the search button click event
