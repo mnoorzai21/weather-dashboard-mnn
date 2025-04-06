@@ -28,9 +28,12 @@ async function getWeatherData(cityName) {
 
     // Fetch weather data for the city
     const weatherUrl = `https://api.openweathermap.org/data/2.5/onecall?lat=${cityInfo.lat}&lon=${cityInfo.lon}&exclude=minutely,hourly&units=imperial&appid=${apiKey}`;
-;
     const weatherResponse = await fetch(weatherUrl);
     const weatherData = await weatherResponse.json();
+
+    if (!weatherData.daily) {
+      throw new Error("Daily weather data is unavailable.");
+    }
 
     displayCurrentWeather(weatherData, cityName);
     displayFiveDayForecast(weatherData);
@@ -43,6 +46,12 @@ async function getWeatherData(cityName) {
 // Function to display current weather
 function displayCurrentWeather(weatherData, cityName) {
   const currentWeather = weatherData.current;
+
+  if (!currentWeather) {
+    alert("Unable to fetch current weather.");
+    return;
+  }
+
   const cityNameEl = document.createElement("h3");
   cityNameEl.textContent = `${cityName.toUpperCase()} ${moment
     .unix(currentWeather.sunrise)
@@ -76,38 +85,43 @@ function displayFiveDayForecast(weatherData) {
   fiveDaysEl.textContent = "Five Days Forecast";
   fiveDaysResult.append(fiveDaysEl);
 
-  weatherData.daily.slice(0, 5).forEach((dayData) => {
-    const weatherCard = document.createElement("div");
-    weatherCard.classList.add("fiveDaysForcast");
+  if (weatherData.daily && weatherData.daily.length > 0) {
+    weatherData.daily.slice(0, 5).forEach((dayData) => {
+      const weatherCard = document.createElement("div");
+      weatherCard.classList.add("fiveDaysForcast");
 
-    const date = moment.unix(dayData.sunrise).format("MMMM DD, YYYY");
-    const dateEl = document.createElement("p");
-    dateEl.textContent = date;
-    weatherCard.append(dateEl);
+      const date = moment.unix(dayData.sunrise).format("MMMM DD, YYYY");
+      const dateEl = document.createElement("p");
+      dateEl.textContent = date;
+      weatherCard.append(dateEl);
 
-    const weatherIcon = document.createElement("img");
-    weatherIcon.setAttribute(
-      "src",
-      `https://openweathermap.org/img/w/${dayData.weather[0].icon}.png`
-    );
-    weatherCard.append(weatherIcon);
+      const weatherIcon = document.createElement("img");
+      weatherIcon.setAttribute(
+        "src",
+        `https://openweathermap.org/img/w/${dayData.weather[0].icon}.png`
+      );
+      weatherCard.append(weatherIcon);
 
-    const temp = document.createElement("p");
-    temp.textContent = `Temp: ${dayData.temp.day} °F`;
-    weatherCard.append(temp);
+      const temp = document.createElement("p");
+      temp.textContent = `Temp: ${dayData.temp.day} °F`;
+      weatherCard.append(temp);
 
-    const wind = document.createElement("p");
-    wind.textContent = `Wind: ${dayData.wind_speed} MPH`;
-    weatherCard.append(wind);
+      const wind = document.createElement("p");
+      wind.textContent = `Wind: ${dayData.wind_speed} MPH`;
+      weatherCard.append(wind);
 
-    const humidity = document.createElement("p");
-    humidity.textContent = `Humidity: ${dayData.humidity} %`;
-    weatherCard.append(humidity);
+      const humidity = document.createElement("p");
+      humidity.textContent = `Humidity: ${dayData.humidity} %`;
+      weatherCard.append(humidity);
 
-    fiveDaysResult.append(weatherCard);
-  });
+      fiveDaysResult.append(weatherCard);
+    });
+  } else {
+    fiveDaysResult.innerHTML = "<p>No forecast data available.</p>";
+  }
 }
 
+// Function to handle the search button click event
 searchBtn.addEventListener("click", function (event) {
   event.preventDefault();
 
