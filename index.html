@@ -5,43 +5,54 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Dashboard</title>
+
+    <!-- External libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css" integrity="sha384-zCbKRCUGaJDkqS1kPbPd7TveP5iyJE0EjAuZQTgFLD2ylzuqKfdKlfG/eSrtxUkn" crossorigin="anonymous">
     <link rel="stylesheet" href="./assets/css/reset.css">
     <link rel="stylesheet" href="./assets/css/style.css">
-    <title>Weather Dashboard</title>
 </head>
 
 <body>
-    <!-- header/jombotron Weather Dashboard -->
-
-    <div class="col-12">
-        <div class="jumbotron jumbotron-fluid">
-            <div class="container">
-                <h1 class="display-4">Weather Dashboard</h1>
-            </div>
+    <!-- Main Content: Weather Dashboard -->
+    <header class="jumbotron jumbotron-fluid bg-primary text-white">
+        <div class="container">
+            <h1 class="display-4 text-center">Weather Dashboard</h1>
         </div>
-    </div>
-    <!-- search form left with col-3  -->
-    <div class="flex">
-        <div class="col-3" id="searchCity">
-            <h2>Search for a City:</h2>
-            <form class="searchForm" id="searchForm">
-                <input class="form-control mr-sm-5" type="search" placeholder="Search" id="toSearch" aria-label="Search">
-                <button class="btn btn-outline-success btn-block my-2 my-sm-4" type="submit">Search</button>
+    </header>
+
+    <!-- Weather Search Section -->
+    <section class="container d-flex flex-wrap">
+        <!-- Search Form Section -->
+        <aside class="col-md-3 p-3">
+            <h2>Search for a City</h2>
+            <form id="searchForm">
+                <div class="input-group mb-3">
+                    <input type="search" class="form-control" placeholder="Enter City Name" id="toSearch" aria-label="City Name" required>
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-success" type="submit">Search</button>
+                    </div>
+                </div>
             </form>
-            <div id="searchList"></div>
-        </div>
-        <!-- box in the righ with col-9  -->
-        <div class="weatherInfo">
-            <div class="weather-info bg-light" id="today"></div>
-            <!-- icons to the Weather situation -->
-            <div id="fiveDays"></div>
-        </div>
-    </div>
 
-    <script src=" https://code.jquery.com/jquery-3.6.0.min.js"></script>
+            <!-- Search History List -->
+            <div id="searchList"></div>
+        </aside>
+
+        <!-- Weather Information Section -->
+        <section class="col-md-9">
+            <!-- Current Weather Information -->
+            <div id="today" class="weather-info bg-light p-3"></div>
+
+            <!-- 5-Day Forecast -->
+            <div id="fiveDays"></div>
+        </section>
+    </section>
+
+    <!-- External Scripts -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.min.js"></script>
     <script src="./assets/script/script.js"></script>
 </body>
