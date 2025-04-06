@@ -71,7 +71,6 @@ function displayWeather(currentWeatherData, forecastData) {
   const temperature = document.createElement("p");
   const wind = document.createElement("p");
   const humidity = document.createElement("p");
-  const uvi = document.createElement("p")
 
   // Ensure the properties exist before accessing them
   if (currentWeather) {

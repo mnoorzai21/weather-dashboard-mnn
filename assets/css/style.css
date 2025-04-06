@@ -9,9 +9,15 @@ body {
 }
 
 .container {
+    display: flex;
+    flex-wrap: wrap;
     width: 100%;
     height: 40px;
     text-align: center;
+}
+
+.container .col {
+    flex: 1 1 100%; /* By default, each column takes up 100% */
 }
 
 .col-12 {
@@ -46,25 +52,50 @@ h3 {
 }
 
 #fiveDays {
+    box-sizing: border-box;
     display: flex;
     flex-direction: row;
     align-content: space-between;
 }
 
-@media only screen and (max-width: 500px) {
-    .fiveDaysForcast {
-        width: 100%;
+/* Media Queries for responsiveness */
+
+/* Large screens */
+@media (min-width: 992px) {
+    #fiveDays p {
+        font-size: 18px;
+        padding: 10px;
     }
-    #fiveDays {
-        flex-direction: column;
+}
+
+/* Medium screens */
+@media (min-width: 768px) and (max-width: 991px) {
+    #fiveDays p {
+        font-size: 16px;
+        padding: 8px;
     }
-    .display-4 {
-        font-size: 2rem;
+}
+
+/* Small screens */
+@media (max-width: 767px) {
+    #fiveDays p {
+        font-size: 14px;
+        padding: 6px;
     }
-    h2 {
-        font-size: 1rem;
+
+    .container {
+        padding: 10px;
     }
-    .searchForm {
-        width: 100%;
+}
+
+@media (min-width: 600px) {
+    .container .col {
+        flex: 1 1 50%; /* On medium screens, columns take up 50% */
+    }
+}
+
+@media (min-width: 900px) {
+    .container .col {
+        flex: 1 1 33%; /* On large screens, columns take up 33% */
     }
 }
