@@ -16,8 +16,8 @@
 </head>
 
 <body>
-    <!-- Main Content: Weather Dashboard -->
-    <header class="jumbotron jumbotron-fluid bg-primary text-white">
+    <!-- Header: Weather Dashboard Title -->
+    <header class="jumbotron jumbotron-fluid bg-primary text-white mb-4">
         <div class="container">
             <h1 class="display-4 text-center">Weather Dashboard</h1>
         </div>
@@ -30,7 +30,9 @@
             <h2>Search for a City</h2>
             <form id="searchForm">
                 <div class="input-group mb-3">
+                    <!-- Input field for city name -->
                     <input type="search" class="form-control" placeholder="Enter City Name" id="toSearch" aria-label="City Name" required>
+                    <!-- Button to submit search -->
                     <div class="input-group-append">
                         <button class="btn btn-outline-success" type="submit">Search</button>
                     </div>
@@ -42,9 +44,9 @@
         </aside>
 
         <!-- Weather Information Section -->
-        <section class="col-md-9">
+        <section class="col-md-9 p-3">
             <!-- Current Weather Information -->
-            <div id="today" class="weather-info bg-light p-3"></div>
+            <div id="today" class="weather-info bg-light p-3 mb-4"></div>
 
             <!-- 5-Day Forecast -->
             <div id="fiveDays"></div>
