@@ -1,0 +1,26 @@
+{
+  "name": "weather-dashboard-mnn",
+  "version": "1.0.0",
+  "description": "Weather Dashboard is a responsive web application that allows users to search for a city and view its current weather and forecast for the next five days. This project utilizes HTML, CSS, and JavaScript to provide an intuitive user interface and dynamic functionality. By implementing the OpenWeatherMap API, users can access real-time weather data for cities around the world.",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mnoorzai21/weather-dashboard-mnn.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/mnoorzai21/weather-dashboard-mnn/issues"
+  },
+  "homepage": "https://github.com/mnoorzai21/weather-dashboard-mnn#readme",
+  "dependencies": {
+    "dotenv": "^18.0.0",
+    "express": "^5.2.1"
+  }
+}

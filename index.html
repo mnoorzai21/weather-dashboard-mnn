@@ -5,46 +5,130 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Moment.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+
+    <!-- jQuery -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css" integrity="sha384-zCbKRCUGaJDkqS1kPbPd7TveP5iyJE0EjAuZQTgFLD2ylzuqKfdKlfG/eSrtxUkn" crossorigin="anonymous">
+
+    <!-- Bootstrap -->
+    <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css"
+        integrity="sha384-zCbKRCUGaJDkqS1kPbPd7TveP5iyJE0EjAuZQTgFLD2ylzuqKfdKlfG/eSrtxUkn"
+        crossorigin="anonymous"
+    >
+
+    <!-- Custom CSS -->
     <link rel="stylesheet" href="./assets/css/reset.css">
     <link rel="stylesheet" href="./assets/css/style.css">
+
     <title>Weather Dashboard</title>
 </head>
 
 <body>
-    <!-- header/jombotron Weather Dashboard -->
 
-    <div class="col-12">
-    <div class="jumbotron jumbotron-fluid" style="background-color: transparent; color: white;">
+    <!-- =========================
+         HEADER
+    ========================== -->
+
+    <header class="weather-header">
         <div class="container">
-            <h1 class="display-4">Weather Dashboard</h1>
+            <h1>Weather Dashboard</h1>
         </div>
-    </div>
-    </div>
+    </header>
 
-    <!-- search form left with col-3  -->
-    <div class="flex">
-        <div class="col-3" id="searchCity">
-            <h2>Search for a City:</h2>
-            <form class="searchForm" id="searchForm">
-                <input class="form-control mr-sm-5" type="search" placeholder="Search" id="toSearch" aria-label="Search">
-                <button class="btn btn-outline-success btn-block my-2 my-sm-4" type="submit">Search</button>
-            </form>
-            <div id="searchList"></div>
-        </div>
-        <!-- box in the righ with col-9  -->
-        <div class="weatherInfo">
-            <div class="weather-info bg-light" id="today"></div>
-            <!-- icons to the Weather situation -->
-            <div id="fiveDays"></div>
-        </div>
-    </div>
 
-    <script src=" https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.min.js"></script>
+    <!-- =========================
+         MAIN CONTENT
+    ========================== -->
+
+    <main class="container-fluid">
+
+        <div class="row">
+
+            <!-- =========================
+                 LEFT: SEARCH
+            ========================== -->
+
+            <aside class="col-lg-3 col-md-4" id="searchCity">
+
+                <h2>Search for a City:</h2>
+
+                <form class="searchForm" id="searchForm">
+
+                    <input
+                        class="form-control"
+                        type="search"
+                        placeholder="Search"
+                        id="toSearch"
+                        aria-label="Search for a city"
+                    >
+
+                    <button
+                        class="btn btn-primary btn-block my-3"
+                        type="submit"
+                    >
+                        Search
+                    </button>
+
+                </form>
+
+                <!-- Previous searches will appear here -->
+                <div id="searchList"></div>
+
+            </aside>
+
+
+            <!-- =========================
+                 RIGHT: WEATHER
+            ========================== -->
+
+            <section class="col-lg-9 col-md-8">
+
+                <div class="weatherInfo">
+
+                    <!-- =========================
+                         TODAY'S WEATHER
+                    ========================== -->
+
+                    <div class="weather-info" id="today">
+                        <!-- JavaScript will insert today's weather here -->
+                    </div>
+
+
+                    <!-- =========================
+                         5-DAY FORECAST
+                    ========================== -->
+
+                    <div class="forecast-section">
+
+                        <h2>5-Day Forecast</h2>
+
+                        <div id="fiveDays">
+                            <!-- JavaScript will insert the 5-day forecast here -->
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+        </div>
+
+    </main>
+
+
+    <!-- =========================
+         JAVASCRIPT
+    ========================== -->
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"></script>
+
     <script src="./assets/script/script.js"></script>
+
 </body>
 
 </html>

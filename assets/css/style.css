@@ -1,144 +1,441 @@
+
+
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
+
+/* =========================
+   PAGE
+========================= */
+
 html,
 body {
     width: 100%;
     min-height: 100%;
-    margin: 0;
-    padding: 0;
 }
 
 body {
     min-height: 100vh;
     overflow-x: hidden;
+
     background-image: url("../img/bg.webp");
     background-repeat: no-repeat;
     background-size: cover;
     background-position: center center;
     background-attachment: fixed;
+
+    font-family: Arial, Helvetica, sans-serif;
 }
 
-.container {
-    display: flex;
-    flex-wrap: wrap;
+
+/* =========================
+   HEADER
+========================= */
+
+.weather-header {
     width: 100%;
+    padding: 30px 20px;
     text-align: center;
-    padding: 20px;
 }
 
-.jumbotron {
-    margin-bottom: 0;
-    padding: 20px;
-}
-
-/* Columns */
-.container .col {
-    flex: 1 1 100%;
-}
-
-/* Remove background */
-.col-12 {
-    background: none;
-}
-
-/* Flex utility */
-.flex {
-    display: flex;
-}
-
-/* Today's weather */
-.today {
-    display: flex;
-    flex-direction: column;
-}
-
-/* Headings */
-h1,
-h2,
-h3 {
-    color: darkblue;
-}
-
-/* Buttons */
-#btn,
-#searchList button {
-    background-color: rgb(56, 56, 222);
+.weather-header h1 {
     color: white;
-    margin-top: 10px;
-    border: none;
-    padding: 8px 15px;
-    border-radius: 5px;
-    cursor: pointer;
+    font-size: 3rem;
+    font-weight: 600;
+    margin: 20px 0;
+
+    text-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
 }
 
-/* Five-day forecast */
-.weather-info,
-#fiveDays .forecast-card {
+
+/* =========================
+   MAIN LAYOUT
+========================= */
+
+main {
+    padding-bottom: 40px;
+}
+
+
+/* =========================
+   SEARCH SIDEBAR
+========================= */
+
+#searchCity {
+    padding: 25px;
+}
+
+#searchCity h2 {
+    color: white;
+    font-size: 1.5rem;
+    font-weight: 600;
+
+    margin-bottom: 15px;
+
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+
+/* Search Form */
+
+.searchForm {
+    width: 100%;
+}
+
+
+/* Search Input */
+
+#toSearch {
+    width: 100%;
+
+    padding: 12px 15px;
+
+    border: none;
+    border-radius: 10px;
+
+    background: rgba(255, 255, 255, 0.9);
+    color: #222;
+
+    outline: none;
+}
+
+#toSearch::placeholder {
+    color: #777;
+}
+
+#toSearch:focus {
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.3);
+}
+
+
+/* Search Button */
+
+.searchForm button {
+    width: 100%;
+
+    padding: 12px;
+
+    border: none;
+    border-radius: 10px;
+
+    background: #4c6fff;
+    color: white;
+
+    font-weight: 600;
+
+    transition: all 0.3s ease;
+}
+
+.searchForm button:hover {
+    background: #3658e8;
+    transform: translateY(-2px);
+}
+
+
+/* =========================
+   SEARCH HISTORY
+========================= */
+
+#searchList {
+    margin-top: 20px;
+}
+
+#searchList button {
+    width: 100%;
+
+    margin-bottom: 8px;
+    padding: 10px;
+
+    border: none;
+    border-radius: 8px;
+
+    background: rgba(255, 255, 255, 0.85);
+    color: #333;
+
+    cursor: pointer;
+
+    transition: all 0.2s ease;
+}
+
+#searchList button:hover {
+    background: white;
+    transform: translateY(-1px);
+}
+
+
+/* =========================
+   WEATHER AREA
+========================= */
+
+.weatherInfo {
+    width: 100%;
+    padding: 25px;
+}
+
+
+/* =========================
+   TODAY'S WEATHER
+========================= */
+
+.weather-info {
+    width: 100%;
+    min-height: 180px;
+
+    padding: 25px;
+
     background: rgba(0, 0, 0, 0.35);
+
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
 
-    border: 1px solid rgba(255,255,255,0.15);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 20px;
 
-    border-radius: 16px;
+    color: white;
+
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+
+/* =========================
+   5-DAY FORECAST SECTION
+========================= */
+
+.forecast-section {
+    width: 100%;
+
+    margin-top: 20px;
+    padding: 25px;
+
+    background: rgba(0, 0, 0, 0.35);
+
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 20px;
+
+    color: white;
+
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+
+/* Forecast Heading */
+
+.forecast-section h2 {
+    margin-bottom: 20px;
+
+    font-size: 1.4rem;
+    font-weight: 600;
 
     color: white;
 }
 
-/* Five-day forecast text/cards */
-#fiveDays p {
-    background-color: rgba(109, 109, 205, 0.8);
-    color: rgb(255, 255, 255);
-    padding: 8px;
-    border-radius: 5px;
+
+/* =========================
+   FORECAST CONTAINER
+========================= */
+
+#fiveDays {
+    width: 100%;
+
+    display: grid;
+
+    grid-template-columns: repeat(5, 1fr);
+
+    gap: 12px;
 }
+
+
+/* =========================
+   FORECAST CARDS
+========================= */
+
+#fiveDays > div {
+    min-height: 150px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    padding: 15px 10px;
+
+    background: rgba(255, 255, 255, 0.12);
+
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 15px;
+
+    text-align: center;
+
+    transition: all 0.25s ease;
+}
+
+#fiveDays > div:hover {
+    background: rgba(255, 255, 255, 0.2);
+
+    transform: translateY(-4px);
+}
+
+
+/* Forecast Text */
+
+#fiveDays p {
+    margin-bottom: 8px;
+
+    background: transparent;
+
+    color: white;
+
+    padding: 0;
+
+    border-radius: 0;
+
+    font-size: 15px;
+}
+
+
+/* Forecast Images */
+
+#fiveDays img {
+    width: 60px;
+    height: 60px;
+
+    object-fit: contain;
+
+    margin: 5px 0;
+}
+
+
+/* Forecast Temperature */
+
+#fiveDays strong {
+    display: block;
+
+    font-size: 20px;
+
+    color: white;
+
+    margin-top: 5px;
+}
+
+
+/* Forecast Description */
+
+#fiveDays span {
+    display: block;
+
+    margin-top: 5px;
+
+    color: rgba(255, 255, 255, 0.75);
+
+    font-size: 12px;
+}
+
+
+/* =========================
+   RESPONSIVE
+========================= */
+
 
 /* Large screens */
+
 @media (min-width: 992px) {
-    #fiveDays p {
-        font-size: 18px;
-        padding: 10px;
-    }
-}
 
-/* Medium screens */
-@media (min-width: 768px) and (max-width: 991px) {
-    #fiveDays p {
-        font-size: 16px;
-        padding: 8px;
-    }
-}
-
-/* Small screens */
-@media (max-width: 767px) {
-    #fiveDays p {
-        font-size: 14px;
-        padding: 6px;
-    }
-
-    .container {
-        padding: 10px;
+    .weather-header h1 {
+        font-size: 3rem;
     }
 
     #fiveDays {
-        flex-wrap: wrap;
+        grid-template-columns: repeat(5, 1fr);
     }
 }
 
-/* Medium screens - columns */
-@media (min-width: 600px) {
-    .container .col {
-        flex: 1 1 50%;
+
+/* Medium screens */
+
+@media (min-width: 768px) and (max-width: 991px) {
+
+    .weather-header h1 {
+        font-size: 2.5rem;
+    }
+
+    #searchCity {
+        padding: 15px;
+    }
+
+    .weatherInfo {
+        padding: 15px;
+    }
+
+    #fiveDays {
+        grid-template-columns: repeat(3, 1fr);
     }
 }
 
-/* Large screens - columns */
-@media (min-width: 900px) {
-    .container .col {
-        flex: 1 1 33.333%;
+
+/* Small screens */
+
+@media (max-width: 767px) {
+
+    .weather-header {
+        padding: 20px 10px;
+    }
+
+    .weather-header h1 {
+        font-size: 2.2rem;
+        margin: 10px 0;
+    }
+
+    #searchCity {
+        padding: 15px;
+    }
+
+    .weatherInfo {
+        padding: 15px;
+    }
+
+    .weather-info {
+        padding: 20px;
+    }
+
+    .forecast-section {
+        padding: 20px;
+    }
+
+    #fiveDays {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    #fiveDays > div {
+        min-height: 140px;
+    }
+}
+
+
+/* Very small phones */
+
+@media (max-width: 450px) {
+
+    .weather-header h1 {
+        font-size: 1.9rem;
+    }
+
+    #fiveDays {
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+    }
+
+    #fiveDays > div {
+        padding: 12px 5px;
+    }
+
+    #fiveDays img {
+        width: 50px;
+        height: 50px;
     }
 }
