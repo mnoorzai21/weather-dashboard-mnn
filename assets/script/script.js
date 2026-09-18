@@ -5,7 +5,6 @@
 const searchForm = document.querySelector("#searchForm");
 const searchInput = document.querySelector("#toSearch");
 const searchList = document.querySelector("#searchList");
-// const searchBtn = document.querySelector(".btn");
 const todayResult = document.querySelector("#today");
 const fiveDaysResult = document.querySelector("#fiveDays");
 
@@ -34,24 +33,34 @@ async function getWeatherData(cityName) {
     displayWeather(data.weatherData, data.forecastData);
   } catch (error) {
     console.error(error);
+
     todayResult.innerHTML = `<p>${error.message}</p>`;
     fiveDaysResult.innerHTML = "";
   }
 }
 
-// =========================
+// ==============================
 // DISPLAY WEATHER
-// =========================
+// ==============================
 
 function displayWeather(currentWeatherData, forecastData) {
   // =========================
+  // CLEAR PREVIOUS WEATHER
+  // =========================
+
+  todayResult.innerHTML = "";
+  fiveDaysResult.innerHTML = "";
+
+  // =========================
   // TODAY'S WEATHER
-  //  =========================
+  // =========================
+
   const currentWeather = currentWeatherData.main;
   const currentCondition = currentWeatherData.weather[0];
 
   // Today's date
   const today = new Date();
+
   const formattedToday = today.toLocaleDateString("en-US", {
     weekday: "long",
     month: "long",
@@ -68,7 +77,9 @@ function displayWeather(currentWeatherData, forecastData) {
 
   // Weather description
   const descriptionEl = document.createElement("p");
+
   descriptionEl.textContent = currentCondition.description;
+
   todayResult.append(descriptionEl);
 
   // Weather icon
@@ -77,16 +88,17 @@ function displayWeather(currentWeatherData, forecastData) {
   weatherIcon.src = `https://openweathermap.org/img/wn/${currentCondition.icon}@2x.png`;
 
   weatherIcon.alt = currentCondition.description;
+
   todayResult.append(weatherIcon);
 
-  //Temperature
+  // Temperature
   const temperature = document.createElement("p");
 
   temperature.textContent = `Temp: ${Math.round(currentWeather.temp)} °F`;
 
   todayResult.append(temperature);
 
-  //Wind
+  // Wind
   const wind = document.createElement("p");
 
   wind.textContent = `Wind: ${Math.round(currentWeatherData.wind.speed)} MPH`;
@@ -94,7 +106,6 @@ function displayWeather(currentWeatherData, forecastData) {
   todayResult.append(wind);
 
   // Humidity
-
   const humidity = document.createElement("p");
 
   humidity.textContent = `Humidity: ${currentWeather.humidity}%`;
@@ -103,33 +114,27 @@ function displayWeather(currentWeatherData, forecastData) {
 
   // =========================
   // 5-DAY FORECAST
-  //   =========================
+  // =========================
 
-  const fiveDaysTitle = document.createElement("h3");
+  // Clear previous forecast
+  fiveDaysResult.innerHTML = "";
 
-  fiveDaysTitle.textContent = "5-Day Forecast";
-
-  fiveDaysResult.append(fiveDaysTitle);
-
-  // -------------------------
-  // Find one forecast per day
-  //  -------------------------
+  // =========================
+  // FIND ONE FORECAST PER DAY
+  // =========================
 
   const dailyForecasts = [];
-
   const usedDates = new Set();
 
   forecastData.list.forEach((dayData) => {
     // Convert OpenWeather timestamp
-    // into a JavaScript Date object
+    // into JavaScript Date object
     const forecastDate = new Date(dayData.dt * 1000);
 
     // Get YYYY-MM-DD
-
     const dateKey = forecastDate.toLocaleDateString("en-CA");
 
     // Only keep the first forecast for each day
-
     if (!usedDates.has(dateKey)) {
       usedDates.add(dateKey);
 
@@ -137,7 +142,10 @@ function displayWeather(currentWeatherData, forecastData) {
     }
   });
 
-  // Only display five days
+  // =========================
+  // DISPLAY FIVE DAYS
+  // =========================
+
   dailyForecasts.slice(0, 5).forEach((dayData) => {
     // =========================
     // Forecast Card
@@ -147,9 +155,9 @@ function displayWeather(currentWeatherData, forecastData) {
 
     weatherCard.classList.add("fiveDaysForecast");
 
-    // -------------------------
+    // =========================
     // Date
-    // -------------------------
+    // =========================
 
     const forecastDate = new Date(dayData.dt * 1000);
 
@@ -163,9 +171,9 @@ function displayWeather(currentWeatherData, forecastData) {
 
     weatherCard.append(dateEl);
 
-    // -------------------------
+    // =========================
     // Weather Icon
-    // -------------------------
+    // =========================
 
     const dayIcon = document.createElement("img");
 
@@ -175,9 +183,9 @@ function displayWeather(currentWeatherData, forecastData) {
 
     weatherCard.append(dayIcon);
 
-    // -------------------------
+    // =========================
     // Temperature
-    // -------------------------
+    // =========================
 
     const temp = document.createElement("p");
 
@@ -185,9 +193,9 @@ function displayWeather(currentWeatherData, forecastData) {
 
     weatherCard.append(temp);
 
-    // -------------------------
+    // =========================
     // Weather Description
-    // -------------------------
+    // =========================
 
     const description = document.createElement("span");
 
@@ -195,9 +203,9 @@ function displayWeather(currentWeatherData, forecastData) {
 
     weatherCard.append(description);
 
-    // -------------------------
+    // =========================
     // Wind
-    // -------------------------
+    // =========================
 
     const wind = document.createElement("p");
 
@@ -205,9 +213,9 @@ function displayWeather(currentWeatherData, forecastData) {
 
     weatherCard.append(wind);
 
-    // -------------------------
+    // =========================
     // Humidity
-    //  -------------------------
+    // =========================
 
     const humidity = document.createElement("p");
 
@@ -220,9 +228,9 @@ function displayWeather(currentWeatherData, forecastData) {
   });
 }
 
-// =========================
+// ==============================
 // SEARCH FORM
-// =========================
+// ==============================
 
 searchForm.addEventListener("submit", function (event) {
   event.preventDefault();
@@ -234,24 +242,22 @@ searchForm.addEventListener("submit", function (event) {
   }
 
   // Get weather
-
   getWeatherData(searchValue);
 
   // Add city to search history
-
   if (!searchHistory.includes(searchValue)) {
     searchHistory.push(searchValue);
 
     updateSearchHistory();
   }
-  // Clear input
 
+  // Clear input
   searchInput.value = "";
 });
 
-// =========================
+// ==============================
 // SEARCH HISTORY
-// =========================
+// ==============================
 
 function updateSearchHistory() {
   searchList.innerHTML = "";
@@ -271,12 +277,12 @@ function updateSearchHistory() {
   });
 
   // Save history
-
   localStorage.setItem("searchHistory", JSON.stringify(searchHistory));
 }
-// =========================
+
+// ==============================
 // INITIALIZE APP
-// ==========================
+// ==============================
 
 function init() {
   const savedSearchHistory = JSON.parse(localStorage.getItem("searchHistory"));
@@ -288,5 +294,8 @@ function init() {
   updateSearchHistory();
 }
 
-// Start App
+// ==============================
+// START APP
+// ==============================
+
 init();
