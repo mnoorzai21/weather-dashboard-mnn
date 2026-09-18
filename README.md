@@ -28,7 +28,7 @@ During the development of this app, I gained hands-on experience in:
 ## Live Demo
 
 You can view the live version of the app here:  
-[Weather Dashboard Live](https://your-service-name.onrender.com)
+[Weather Dashboard Live](https://weather-dashboard-mnn.onrender.com)
 
 ## Screenshot
 ![Weather Dashboard Screenshot](./assets/img/screenshot.png)
