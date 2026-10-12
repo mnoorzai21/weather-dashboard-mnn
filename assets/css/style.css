@@ -439,3 +439,15 @@ main {
         height: 50px;
     }
 }
+
+/* =========================
+   MOBILE BACKGROUND FIX
+========================= */
+
+@media (max-width: 767px) {
+    body {
+        background-position: center top;
+        background-attachment: scroll;
+        background-size: cover;
+    }
+}
