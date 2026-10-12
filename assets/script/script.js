@@ -21,7 +21,7 @@ let searchHistory = [];
 async function getWeatherData(cityName) {
   try {
     const response = await fetch(
-      `/api/weather?city=${encodeURIComponent(cityName)}`,
+      `https://weather-dashboard-mnn.onrender.com/api/weather?city=${encodeURIComponent(cityName)}`,
     );
 
     const data = await response.json();

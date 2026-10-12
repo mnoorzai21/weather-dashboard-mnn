@@ -2,9 +2,11 @@ require("dotenv").config();
 
 const express = require("express");
 const path = require("path");
+const cors = require("cors");
 
 const app = express();
 const PORT = 3000;
+app.use(cors());
 
 const API_KEY = process.env.OPENWEATHER_API_KEY;
 
