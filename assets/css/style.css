@@ -444,7 +444,12 @@ main {
    MOBILE BACKGROUND FIX
 ========================= */
 
+.mobile-background {
+    display: none;
+}
+
 @media (max-width: 767px) {
+
     html {
         background-color: #173b62;
     }
@@ -455,11 +460,17 @@ main {
     }
 
     body::before {
-    content: "";
-    position: fixed;
-    inset: 0;
-    width: 100%;
-    height: 100svh;
+        content: none;
+    }
+
+    .mobile-background {
+        display: block;
+        position: fixed;
+        inset: 0;
+
+        width: 100%;
+        height: 100%;
+        height: 100lvh;
 
         background-image: url("../img/bg.webp");
         background-repeat: no-repeat;
@@ -470,7 +481,8 @@ main {
         pointer-events: none;
     }
 
-    body > * {
+    .weather-header,
+    main {
         position: relative;
         z-index: 1;
     }
