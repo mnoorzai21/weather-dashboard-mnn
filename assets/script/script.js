@@ -14,6 +14,13 @@ const fiveDaysResult = document.querySelector("#fiveDays");
 
 let searchHistory = [];
 
+// Keep the history list short so the sidebar stays tidy
+const MAX_HISTORY = 8;
+
+// Counts searches so a slow, older response can't
+// overwrite the result of a newer search
+let latestRequestId = 0;
+
 // Backend API (hosted on Render)
 const API_BASE_URL = "https://weather-dashboard-mnn.onrender.com";
 
@@ -35,15 +42,19 @@ function wakeUpServer() {
 // ==============================
 
 async function getWeatherData(cityName) {
+  const requestId = ++latestRequestId;
+
   // Show a loading message while waiting for the server
   showMessage(`Loading weather for ${cityName}...`);
   fiveDaysResult.innerHTML = "";
 
   // If the server is still waking up, let the user know
   const slowTimer = setTimeout(() => {
-    showMessage(
-      "Waking up the weather server, this can take up to a minute the first time...",
-    );
+    if (requestId === latestRequestId) {
+      showMessage(
+        "Waking up the weather server, this can take up to a minute the first time...",
+      );
+    }
   }, 4000);
 
   try {
@@ -51,22 +62,33 @@ async function getWeatherData(cityName) {
       `${API_BASE_URL}/api/weather?city=${encodeURIComponent(cityName)}`,
     );
 
-    clearTimeout(slowTimer);
-
     const data = await response.json();
+
+    // A newer search has started; ignore this result
+    if (requestId !== latestRequestId) {
+      return;
+    }
 
     if (!response.ok) {
       throw new Error(data.message || "Unable to get weather data.");
     }
 
     displayWeather(data.weatherData, data.forecastData);
+
+    // Only save cities that were actually found,
+    // using the official name from the API
+    addToSearchHistory(data.weatherData.name);
   } catch (error) {
-    clearTimeout(slowTimer);
+    if (requestId !== latestRequestId) {
+      return;
+    }
 
     console.error(error);
 
-    showMessage(error.message);
+    showMessage(capitalize(error.message));
     fiveDaysResult.innerHTML = "";
+  } finally {
+    clearTimeout(slowTimer);
   }
 }
 
@@ -77,6 +99,30 @@ function showMessage(text) {
   messageEl.textContent = text;
 
   todayResult.replaceChildren(messageEl);
+}
+
+// ==============================
+// DATE HELPERS
+// ==============================
+
+// OpenWeather gives times in UTC plus the city's offset
+// (in seconds). Shifting by the offset and reading the
+// result as UTC gives the time *in that city*, no matter
+// where the person viewing the page is.
+function toCityTime(unixSeconds, offsetSeconds) {
+  return new Date((unixSeconds + offsetSeconds) * 1000);
+}
+
+// YYYY-MM-DD in the city's local time
+function cityDateKey(unixSeconds, offsetSeconds) {
+  return toCityTime(unixSeconds, offsetSeconds).toISOString().slice(0, 10);
+}
+
+function formatCityDate(unixSeconds, offsetSeconds, options) {
+  return toCityTime(unixSeconds, offsetSeconds).toLocaleDateString("en-US", {
+    ...options,
+    timeZone: "UTC",
+  });
 }
 
 // ==============================
@@ -97,11 +143,11 @@ function displayWeather(currentWeatherData, forecastData) {
 
   const currentWeather = currentWeatherData.main;
   const currentCondition = currentWeatherData.weather[0];
+  const cityOffset = currentWeatherData.timezone;
+  const nowSeconds = Math.floor(Date.now() / 1000);
 
-  // Today's date
-  const today = new Date();
-
-  const formattedToday = today.toLocaleDateString("en-US", {
+  // Today's date in the searched city
+  const formattedToday = formatCityDate(nowSeconds, cityOffset, {
     weekday: "long",
     month: "long",
     day: "numeric",
@@ -118,7 +164,7 @@ function displayWeather(currentWeatherData, forecastData) {
   // Weather description
   const descriptionEl = document.createElement("p");
 
-  descriptionEl.textContent = currentCondition.description;
+  descriptionEl.textContent = capitalize(currentCondition.description);
 
   todayResult.append(descriptionEl);
 
@@ -153,57 +199,50 @@ function displayWeather(currentWeatherData, forecastData) {
   todayResult.append(humidity);
 
   // =========================
-  // 5-DAY FORECAST
-  // =========================
-
-  // Clear previous forecast
-  fiveDaysResult.innerHTML = "";
-
-  // =========================
   // FIND ONE FORECAST PER DAY
   // =========================
 
-  const dailyForecasts = [];
-  const usedDates = new Set();
+  // The forecast API returns a reading every 3 hours.
+  // For each upcoming day (skipping today), keep the
+  // reading closest to midday so it reflects daytime weather.
+  const forecastOffset = forecastData.city?.timezone ?? cityOffset;
+  const todayKey = cityDateKey(nowSeconds, forecastOffset);
+  const middayByDate = new Map();
 
-  forecastData.list.forEach((dayData) => {
-    // Convert OpenWeather timestamp
-    // into JavaScript Date object
-    const forecastDate = new Date(dayData.dt * 1000);
+  forecastData.list.forEach((reading) => {
+    const dateKey = cityDateKey(reading.dt, forecastOffset);
 
-    // Get YYYY-MM-DD
-    const dateKey = forecastDate.toLocaleDateString("en-CA");
+    if (dateKey === todayKey) {
+      return;
+    }
 
-    // Only keep the first forecast for each day
-    if (!usedDates.has(dateKey)) {
-      usedDates.add(dateKey);
+    const hour = toCityTime(reading.dt, forecastOffset).getUTCHours();
+    const distanceFromNoon = Math.abs(hour - 12);
+    const saved = middayByDate.get(dateKey);
 
-      dailyForecasts.push(dayData);
+    if (!saved || distanceFromNoon < saved.distanceFromNoon) {
+      middayByDate.set(dateKey, { reading, distanceFromNoon });
     }
   });
+
+  const dailyForecasts = [...middayByDate.values()].map(
+    (entry) => entry.reading,
+  );
 
   // =========================
   // DISPLAY FIVE DAYS
   // =========================
 
   dailyForecasts.slice(0, 5).forEach((dayData) => {
-    // =========================
     // Forecast Card
-    // =========================
-
     const weatherCard = document.createElement("div");
 
     weatherCard.classList.add("fiveDaysForecast");
 
-    // =========================
     // Date
-    // =========================
-
-    const forecastDate = new Date(dayData.dt * 1000);
-
     const dateEl = document.createElement("p");
 
-    dateEl.textContent = forecastDate.toLocaleDateString("en-US", {
+    dateEl.textContent = formatCityDate(dayData.dt, forecastOffset, {
       weekday: "short",
       month: "short",
       day: "numeric",
@@ -211,10 +250,7 @@ function displayWeather(currentWeatherData, forecastData) {
 
     weatherCard.append(dateEl);
 
-    // =========================
     // Weather Icon
-    // =========================
-
     const dayIcon = document.createElement("img");
 
     dayIcon.src = `https://openweathermap.org/img/wn/${dayData.weather[0].icon}@2x.png`;
@@ -223,40 +259,28 @@ function displayWeather(currentWeatherData, forecastData) {
 
     weatherCard.append(dayIcon);
 
-    // =========================
     // Temperature
-    // =========================
-
-    const temp = document.createElement("p");
+    const temp = document.createElement("strong");
 
     temp.textContent = `${Math.round(dayData.main.temp)} °F`;
 
     weatherCard.append(temp);
 
-    // =========================
     // Weather Description
-    // =========================
-
     const description = document.createElement("span");
 
-    description.textContent = dayData.weather[0].description;
+    description.textContent = capitalize(dayData.weather[0].description);
 
     weatherCard.append(description);
 
-    // =========================
     // Wind
-    // =========================
-
     const wind = document.createElement("p");
 
     wind.textContent = `Wind: ${Math.round(dayData.wind.speed)} MPH`;
 
     weatherCard.append(wind);
 
-    // =========================
     // Humidity
-    // =========================
-
     const humidity = document.createElement("p");
 
     humidity.textContent = `Humidity: ${dayData.main.humidity}%`;
@@ -266,6 +290,15 @@ function displayWeather(currentWeatherData, forecastData) {
     // Add card to forecast
     fiveDaysResult.append(weatherCard);
   });
+}
+
+// "light rain" -> "Light rain"
+function capitalize(text) {
+  if (!text) {
+    return "";
+  }
+
+  return text.charAt(0).toUpperCase() + text.slice(1);
 }
 
 // ==============================
@@ -281,15 +314,7 @@ searchForm.addEventListener("submit", function (event) {
     return;
   }
 
-  // Get weather
   getWeatherData(searchValue);
-
-  // Add city to search history
-  if (!searchHistory.includes(searchValue)) {
-    searchHistory.push(searchValue);
-
-    updateSearchHistory();
-  }
 
   // Clear input
   searchInput.value = "";
@@ -298,6 +323,19 @@ searchForm.addEventListener("submit", function (event) {
 // ==============================
 // SEARCH HISTORY
 // ==============================
+
+function addToSearchHistory(city) {
+  // Remove any existing copy (case-insensitive) so the
+  // city moves to the top instead of appearing twice
+  searchHistory = searchHistory.filter(
+    (savedCity) => savedCity.toLowerCase() !== city.toLowerCase(),
+  );
+
+  searchHistory.unshift(city);
+  searchHistory = searchHistory.slice(0, MAX_HISTORY);
+
+  updateSearchHistory();
+}
 
 function updateSearchHistory() {
   searchList.innerHTML = "";
@@ -316,22 +354,36 @@ function updateSearchHistory() {
     searchList.append(savedCityBtn);
   });
 
-  // Save history
-  localStorage.setItem("searchHistory", JSON.stringify(searchHistory));
+  // Save history (storage can be unavailable, e.g. private browsing)
+  try {
+    localStorage.setItem("searchHistory", JSON.stringify(searchHistory));
+  } catch (error) {
+    console.warn("Could not save search history.", error);
+  }
 }
 
 // ==============================
 // INITIALIZE APP
 // ==============================
 
+function loadSearchHistory() {
+  try {
+    const saved = JSON.parse(localStorage.getItem("searchHistory"));
+
+    if (Array.isArray(saved)) {
+      return saved.filter((city) => typeof city === "string");
+    }
+  } catch (error) {
+    console.warn("Could not read search history.", error);
+  }
+
+  return [];
+}
+
 function init() {
   wakeUpServer();
 
-  const savedSearchHistory = JSON.parse(localStorage.getItem("searchHistory"));
-
-  if (savedSearchHistory) {
-    searchHistory = savedSearchHistory;
-  }
+  searchHistory = loadSearchHistory().slice(0, MAX_HISTORY);
 
   updateSearchHistory();
 }

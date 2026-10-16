@@ -10,8 +10,12 @@ app.use(cors());
 
 const API_KEY = process.env.OPENWEATHER_API_KEY;
 
-// Serve your website files
-app.use(express.static(__dirname));
+// Serve only the website files (not server.js, package.json, etc.)
+app.use("/assets", express.static(path.join(__dirname, "assets")));
+
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "index.html"));
+});
 
 // Lightweight endpoint the frontend calls on page load
 // to wake the server up (Render free tier sleeps when idle)
@@ -23,9 +27,18 @@ app.get("/api/health", (req, res) => {
 app.get("/api/weather", async (req, res) => {
   const city = req.query.city;
 
-  if (!city) {
+  // Repeated ?city= params arrive as an array, so require a single string
+  if (typeof city !== "string" || !city.trim()) {
     return res.status(400).json({
       message: "City is required.",
+    });
+  }
+
+  if (!API_KEY) {
+    console.error("OPENWEATHER_API_KEY is not set.");
+
+    return res.status(500).json({
+      message: "Weather service is not configured.",
     });
   }
 
