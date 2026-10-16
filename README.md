@@ -28,7 +28,9 @@ During the development of this app, I gained hands-on experience in:
 ## Live Demo
 
 You can view the live version of the app here:  
-[Weather Dashboard Live](https://weather-dashboard-mnn.onrender.com)
+[Weather Dashboard Live](https://mnoorzai21.github.io/weather-dashboard-mnn/)
+
+The frontend is hosted on GitHub Pages and the backend API (which keeps the OpenWeatherMap API key private) runs on Render at `https://weather-dashboard-mnn.onrender.com`.
 
 ## Screenshot
 ![Weather Dashboard Screenshot](./assets/img/screenshot.png)

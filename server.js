@@ -5,13 +5,19 @@ const path = require("path");
 const cors = require("cors");
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 app.use(cors());
 
 const API_KEY = process.env.OPENWEATHER_API_KEY;
 
 // Serve your website files
 app.use(express.static(__dirname));
+
+// Lightweight endpoint the frontend calls on page load
+// to wake the server up (Render free tier sleeps when idle)
+app.get("/api/health", (req, res) => {
+  res.json({ status: "ok" });
+});
 
 // Weather API
 app.get("/api/weather", async (req, res) => {

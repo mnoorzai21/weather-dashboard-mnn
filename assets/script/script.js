@@ -14,15 +14,44 @@ const fiveDaysResult = document.querySelector("#fiveDays");
 
 let searchHistory = [];
 
+// Backend API (hosted on Render)
+const API_BASE_URL = "https://weather-dashboard-mnn.onrender.com";
+
+// ==============================
+// WAKE UP BACKEND
+// ==============================
+
+// Render's free tier puts the server to sleep when idle.
+// Ping it as soon as the page loads so it is awake
+// by the time the user searches for a city.
+function wakeUpServer() {
+  fetch(`${API_BASE_URL}/api/health`).catch(() => {
+    // Ignore errors here; the search request will report any problem
+  });
+}
+
 // ==============================
 // GET WEATHER DATA
 // ==============================
 
 async function getWeatherData(cityName) {
+  // Show a loading message while waiting for the server
+  showMessage(`Loading weather for ${cityName}...`);
+  fiveDaysResult.innerHTML = "";
+
+  // If the server is still waking up, let the user know
+  const slowTimer = setTimeout(() => {
+    showMessage(
+      "Waking up the weather server, this can take up to a minute the first time...",
+    );
+  }, 4000);
+
   try {
     const response = await fetch(
-      `https://weather-dashboard-mnn.onrender.com/api/weather?city=${encodeURIComponent(cityName)}`,
+      `${API_BASE_URL}/api/weather?city=${encodeURIComponent(cityName)}`,
     );
+
+    clearTimeout(slowTimer);
 
     const data = await response.json();
 
@@ -32,11 +61,22 @@ async function getWeatherData(cityName) {
 
     displayWeather(data.weatherData, data.forecastData);
   } catch (error) {
+    clearTimeout(slowTimer);
+
     console.error(error);
 
-    todayResult.innerHTML = `<p>${error.message}</p>`;
+    showMessage(error.message);
     fiveDaysResult.innerHTML = "";
   }
+}
+
+// Show a status or error message in the today section
+function showMessage(text) {
+  const messageEl = document.createElement("p");
+
+  messageEl.textContent = text;
+
+  todayResult.replaceChildren(messageEl);
 }
 
 // ==============================
@@ -285,6 +325,8 @@ function updateSearchHistory() {
 // ==============================
 
 function init() {
+  wakeUpServer();
+
   const savedSearchHistory = JSON.parse(localStorage.getItem("searchHistory"));
 
   if (savedSearchHistory) {
