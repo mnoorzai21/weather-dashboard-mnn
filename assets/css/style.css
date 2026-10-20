@@ -52,6 +52,51 @@ body {
 
 
 /* =========================
+   DATE & TIME
+========================= */
+
+.date-time {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+
+    padding: 10px 24px;
+
+    background: rgba(0, 0, 0, 0.3);
+
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 14px;
+
+    color: white;
+
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Hide the box until JavaScript fills it in */
+.date-time:has(.current-time:empty) {
+    display: none;
+}
+
+.current-time {
+    font-size: 1.8rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+
+    /* Keep digits the same width so the clock doesn't jiggle */
+    font-variant-numeric: tabular-nums;
+}
+
+.current-date {
+    font-size: 1rem;
+
+    color: rgba(255, 255, 255, 0.85);
+}
+
+
+/* =========================
    MAIN LAYOUT
 ========================= */
 
@@ -389,6 +434,14 @@ main {
     .weather-header h1 {
         font-size: 2.2rem;
         margin: 10px 0;
+    }
+
+    .current-time {
+        font-size: 1.5rem;
+    }
+
+    .current-date {
+        font-size: 0.9rem;
     }
 
     #searchCity {
