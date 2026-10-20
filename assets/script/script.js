@@ -7,6 +7,8 @@ const searchInput = document.querySelector("#toSearch");
 const searchList = document.querySelector("#searchList");
 const todayResult = document.querySelector("#today");
 const fiveDaysResult = document.querySelector("#fiveDays");
+const currentTimeEl = document.querySelector("#currentTime");
+const currentDateEl = document.querySelector("#currentDate");
 
 // ==============================
 // VARIABLES
@@ -35,6 +37,44 @@ function wakeUpServer() {
   fetch(`${API_BASE_URL}/api/health`).catch(() => {
     // Ignore errors here; the search request will report any problem
   });
+}
+
+// ==============================
+// LIVE DATE & TIME
+// ==============================
+
+// Shows the viewer's local date and time in the header
+function updateDateTime() {
+  const now = new Date();
+
+  currentTimeEl.textContent = now.toLocaleTimeString("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+    second: "2-digit",
+  });
+
+  // Machine-readable value for the <time> element
+  currentTimeEl.dateTime = now.toISOString();
+
+  currentDateEl.textContent = now.toLocaleDateString("en-US", {
+    weekday: "long",
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  });
+}
+
+function startClock() {
+  updateDateTime();
+
+  // Line the ticks up with the start of each second
+  // so the clock never looks a second behind
+  const msUntilNextSecond = 1000 - (Date.now() % 1000);
+
+  setTimeout(() => {
+    updateDateTime();
+    setInterval(updateDateTime, 1000);
+  }, msUntilNextSecond);
 }
 
 // ==============================
@@ -382,6 +422,8 @@ function loadSearchHistory() {
 
 function init() {
   wakeUpServer();
+
+  startClock();
 
   searchHistory = loadSearchHistory().slice(0, MAX_HISTORY);
 
