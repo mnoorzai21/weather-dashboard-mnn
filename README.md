@@ -10,6 +10,7 @@ Weather Dashboard is a responsive web application that allows users to search fo
 - **Five-Day Forecast:** Provides the weather forecast for the next five days.
 - **Responsive Design:** The app is optimized for various screen sizes and devices.
 - **Search History:** Users can view and access previous city searches for convenience.
+- **Live Date & Time:** A clock in the header shows the current date and time, updating every second.
 
 ## Technologies Used:
 - **HTML**: Structuring the page and content.
