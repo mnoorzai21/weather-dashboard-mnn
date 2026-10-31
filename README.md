@@ -36,3 +36,63 @@ Browser (GitHub Pages) ──/api/weather?city=…──▶ Express API (Render)
 - **The API key never reaches the browser.** The frontend calls my Express server, and only the server talks to OpenWeatherMap with the key from an environment variable.
 - **Waking the free server early.** Render's free plan sleeps when idle, so the page pings `/api/health` as soon as it loads; by the time the user types a city, the server is usually awake.
 - **One request, two results.** The server fetches the current weather first, then uses that city's coordinates to fetch the five-day forecast, and returns both together.
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js 20 or newer
+- A free [OpenWeatherMap](https://openweathermap.org/api) API key
+
+### Install
+
+```bash
+git clone https://github.com/mnoorzai21/weather-dashboard-mnn.git
+cd weather-dashboard-mnn
+npm install
+```
+
+### Configure
+
+Create a `.env` file in the project root (never commit it):
+
+```env
+OPENWEATHER_API_KEY=your_openweathermap_api_key
+```
+
+### Run
+
+```bash
+npm start
+```
+
+Open http://localhost:3000. Note: `API_BASE_URL` in `assets/script/script.js` points to the live Render API; change it to `http://localhost:3000` to use your local server instead.
+
+### Test
+
+No automated tests yet.
+
+## Deployment
+
+**Backend (Render):**
+1. Create a **Web Service** from this repository.
+2. Build command: `npm install`. Start command: `npm start`.
+3. Add the environment variable `OPENWEATHER_API_KEY` in the Render dashboard.
+
+**Frontend (GitHub Pages):**
+1. In the repository, go to **Settings → Pages**.
+2. Source: **Deploy from a branch**, branch `main`, folder `/ (root)`.
+3. Make sure `API_BASE_URL` in `script.js` points to the Render service URL.
+
+## What I Learned
+
+- **Keeping an API key out of the browser.** At first the frontend called OpenWeatherMap directly, which exposed the key to anyone who opened DevTools. I added a small Express server that holds the key in an environment variable and forwards the requests.
+- **Working around free-plan cold starts.** Render's free server sleeps when idle, so the first search could take a minute. Pinging a health endpoint as soon as the page loads wakes the server while the user is still typing.
+
+## Author
+
+**Mohammad Nabi Noorzai**
+
+- GitHub: [@mnoorzai21](https://github.com/mnoorzai21)
+- LinkedIn: [Mohammad Nabi Noorzai](https://linkedin.com/in/mnoorzai21)
+- Portfolio: [mnoorzai.vercel.app](https://mnoorzai.vercel.app)
